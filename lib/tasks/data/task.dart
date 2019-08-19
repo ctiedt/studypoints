@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class Task {
-  final String id;
+  static int counter = 0;
+  final int id = counter++;
   final String title;
   Map<String, bool> subtasks;
   final DateTime dueDate;
@@ -22,5 +23,5 @@ class Task {
     }
   }
 
-  Task({this.title, this.subtasks, this.dueDate, this.priority, this.id});
+  Task({this.title, this.subtasks, this.dueDate, this.priority});
 }

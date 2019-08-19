@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studypoints/services/user.dart';
 import 'package:studypoints/tasks/data/task.dart';
+import 'package:studypoints/tasks/widgets/new_task_dialog.dart';
 
 /// This screen displays all the current tasks.
 /// It shows them as dismissible [ExpansionTile]s.
@@ -20,17 +21,24 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  Map<String, bool> opened;
+  Map<int, bool> opened;
   Function(Task, Task) taskSorter;
 
   int sortByDate(Task t1, Task t2) {
     if (t1.dueDate != null && t2.dueDate != null) {
       return t1.dueDate.compareTo(t2.dueDate);
-    } else if (t1.dueDate == null) {
+    } else if (t1.dueDate == null && t2.dueDate == null)
+      return t1.title.toLowerCase().compareTo(t2.title.toLowerCase());
+    else if (t1.dueDate == null) {
       return 1;
     } else {
       return -1;
     }
+  }
+
+  int sortByPriority(Task t1, Task t2) {
+    int result = t2.priority.compareTo(t1.priority);
+    return result == 0 ? sortByDate(t1, t2) : result;
   }
 
   @override
@@ -53,7 +61,6 @@ class _TasksScreenState extends State<TasksScreen> {
           trailing: PopupMenuButton(
             icon: Icon(Icons.sort),
             onSelected: (selected) => setState(() => taskSorter = selected),
-            onCanceled: () => setState(() => taskSorter = sortByDate),
             itemBuilder: (context) => [
               PopupMenuItem(
                 child: Row(
@@ -63,7 +70,13 @@ class _TasksScreenState extends State<TasksScreen> {
               PopupMenuItem(
                 child:
                     Row(children: [Icon(Icons.sort_by_alpha), Text('Title')]),
-                value: (Task t1, Task t2) => t1.title.compareTo(t2.title),
+                value: (Task t1, Task t2) =>
+                    t1.title.toLowerCase().compareTo(t2.title.toLowerCase()),
+              ),
+              PopupMenuItem(
+                child: Row(
+                    children: [Icon(Icons.priority_high), Text('Priority')]),
+                value: sortByPriority,
               )
             ],
           )),
@@ -107,6 +120,19 @@ class _TasksScreenState extends State<TasksScreen> {
                           )
                         ],
                       ),
+                      //bla
+                      onTap: () => Navigator.of(context)
+                          .push(MaterialPageRoute<Task>(
+                        builder: (context) => NewTaskDialog(task: t),
+                      ))
+                          .then((val) {
+                        if (val == null) return;
+                        Provider.of<UserService>(context)
+                            .tasks
+                            .removeWhere((task) => task.id == t.id);
+                        Provider.of<UserService>(context).tasks.add(val);
+                      }),
+
                       trailing: Icon(
                         Icons.bookmark,
                         color: t.color,
