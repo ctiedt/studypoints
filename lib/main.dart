@@ -131,7 +131,6 @@ class _DashboardViewState extends State<DashboardView> {
           children: <Widget>[
             // TODO: Add study/no distractions mode
             FlatButton(
-              onPressed: null,
               color: Theme.of(context).backgroundColor,
               child: Text('I want to study now'),
             ),

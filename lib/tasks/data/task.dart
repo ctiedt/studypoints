@@ -3,12 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class Task {
-  static int counter = 0;
-  final int id = counter++;
-  final String title;
+  int id;
+  String title;
   Map<String, bool> subtasks;
-  final DateTime dueDate;
-  final int priority;
+  DateTime dueDate;
+  int priority;
 
   Color get color {
     switch (priority) {
@@ -23,5 +22,14 @@ class Task {
     }
   }
 
-  Task({this.title, this.subtasks, this.dueDate, this.priority});
+  Task({this.title, this.subtasks, this.dueDate, this.priority}) {
+    id = hashValues(title, subtasks, dueDate, priority);
+  }
+
+  void updateProperties(Task t) {
+    title = t.title;
+    subtasks = t.subtasks;
+    dueDate = t.dueDate;
+    priority = t.priority;
+  }
 }

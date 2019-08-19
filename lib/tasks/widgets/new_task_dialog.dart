@@ -10,21 +10,22 @@ class NewTaskDialog extends StatefulWidget {
 }
 
 class _NewTaskDialogState extends State<NewTaskDialog> {
-  int priority = 0;
+  int priority;
   DateTime dueDate;
-  TextEditingController titleController; // = TextEditingController();
+  TextEditingController titleController;
   List<TextEditingController> subtaskControllers = [];
   List<Widget> subtaskInputs = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    if (titleController == null)
-      titleController = TextEditingController(text: widget?.task?.title);
+    titleController ??= TextEditingController(text: widget.task?.title);
     if (widget.task != null) {
-      priority = widget.task.priority;
-      dueDate = widget.task.dueDate;
+      priority ??= widget.task.priority;
+      dueDate ??= widget.task.dueDate;
     }
+    priority ??= 0;
+
     return Form(
       key: _formKey,
       autovalidate: true,
@@ -62,9 +63,6 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                //bla
-                //initialValue: widget.task?.title,
-
                 controller: titleController,
                 decoration: InputDecoration(hintText: 'Task title'),
                 style: Theme.of(context).textTheme.headline,

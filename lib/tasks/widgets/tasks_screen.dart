@@ -120,8 +120,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           )
                         ],
                       ),
-                      //bla
-                      onTap: () => Navigator.of(context)
+                      onLongPress: () => Navigator.of(context)
                           .push(MaterialPageRoute<Task>(
                         builder: (context) => NewTaskDialog(task: t),
                       ))
@@ -129,10 +128,9 @@ class _TasksScreenState extends State<TasksScreen> {
                         if (val == null) return;
                         Provider.of<UserService>(context)
                             .tasks
-                            .removeWhere((task) => task.id == t.id);
-                        Provider.of<UserService>(context).tasks.add(val);
+                            .singleWhere((task) => task.id == t.id)
+                            .updateProperties(val);
                       }),
-
                       trailing: Icon(
                         Icons.bookmark,
                         color: t.color,
