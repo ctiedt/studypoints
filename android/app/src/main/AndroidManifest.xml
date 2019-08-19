@@ -9,7 +9,7 @@
     <application
         android:name="de.ctiedt.studypoints"
         android:label="StudyPoints"
-        android:icon="@drawable/icon.png">
+        android:icon="@drawable/icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
