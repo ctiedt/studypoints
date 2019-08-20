@@ -129,7 +129,10 @@ class _TasksScreenState extends State<TasksScreen> {
                         Provider.of<UserService>(context)
                             .tasks
                             .singleWhere((task) => task.id == t.id)
-                            .updateProperties(val);
+                              ..title = val.title
+                              ..priority = val.priority
+                              ..subtasks = val.subtasks
+                              ..dueDate = val.dueDate;
                       }),
                       trailing: Icon(
                         Icons.bookmark,

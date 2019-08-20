@@ -25,11 +25,4 @@ class Task {
   Task({this.title, this.subtasks, this.dueDate, this.priority}) {
     id = hashValues(title, subtasks, dueDate, priority);
   }
-
-  void updateProperties(Task t) {
-    title = t.title;
-    subtasks = t.subtasks;
-    dueDate = t.dueDate;
-    priority = t.priority;
-  }
 }

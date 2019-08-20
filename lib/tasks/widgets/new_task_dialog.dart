@@ -20,11 +20,8 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
   @override
   Widget build(BuildContext context) {
     titleController ??= TextEditingController(text: widget.task?.title);
-    if (widget.task != null) {
-      priority ??= widget.task.priority;
-      dueDate ??= widget.task.dueDate;
-    }
-    priority ??= 0;
+    priority ??= widget.task?.priority ?? 0;
+    dueDate ??= widget.task?.dueDate;
 
     return Form(
       key: _formKey,
