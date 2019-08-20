@@ -2,20 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:studypoints/tasks/data/task.dart';
 
 class NewTaskDialog extends StatefulWidget {
+  final Task task;
+  NewTaskDialog({this.task});
+
   @override
   _NewTaskDialogState createState() => _NewTaskDialogState();
 }
 
 class _NewTaskDialogState extends State<NewTaskDialog> {
-  int priority = 0;
+  int priority;
   DateTime dueDate;
-  TextEditingController titleController = TextEditingController();
+  TextEditingController titleController;
   List<TextEditingController> subtaskControllers = [];
   List<Widget> subtaskInputs = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    titleController ??= TextEditingController(text: widget.task?.title);
+    priority ??= widget.task?.priority ?? 0;
+    dueDate ??= widget.task?.dueDate;
+
     return Form(
       key: _formKey,
       autovalidate: true,
@@ -44,7 +51,6 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
               },
               dueDate: dueDate,
               priority: priority,
-              id: titleController.value.text.toString(),
             );
             if (_formKey.currentState.validate()) Navigator.pop(context, task);
           },
