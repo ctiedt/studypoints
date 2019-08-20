@@ -14,46 +14,72 @@ class AvatarScreen extends StatefulWidget {
 
 class _AvatarScreenState extends State<AvatarScreen> {
   final List<String> faceOptions = [
-    'assets/face.png',
+    'assets/face1.png',
     'assets/face2.png',
-    'assets/face_mcgucket.png'
+    'assets/face3.png',
+    'assets/face4.png',
+    'assets/face5.png',
+    'assets/face6.png',
   ];
   final List<String> hairOptions = [
     'assets/hair.png',
+    'assets/hair1.png',
+    'assets/hair2.png',
     'assets/hair3.png',
+    'assets/hair4.png',
+    'assets/hairX.png',
+  ];
+  final List<String> bodyOptions = [
+    'assets/body1.png',
+    'assets/body2.png',
+    'assets/body3.png',
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: <Widget>[
-          AvatarView(
-            avatar: Provider.of<UserService>(context).avatar,
-            height: 300,
-          ),
-          PropertyCarousel(
-            caption: 'Faces',
-            current: faceOptions[0],
-            options: faceOptions,
-            callback: (selected) {
-              setState(() {
-                Provider.of<UserService>(context).avatar.face = selected;
-              });
-            },
-          ),
-          PropertyCarousel(
-            caption: 'Hair Styles',
-            current: hairOptions[0],
-            options: hairOptions,
-            callback: (selected) {
-              setState(() {
-                Provider.of<UserService>(context).avatar.hair = selected;
-              });
-            },
-          )
-        ],
-      ),
+      child: Column(children: <Widget>[
+        Center(
+            child: AvatarView(
+          avatar: Provider.of<UserService>(context).avatar,
+          height: 300,
+        )),
+        Expanded(
+            child: ListView(
+          children: <Widget>[
+            PropertyCarousel(
+              caption: 'Faces',
+              current: faceOptions[0],
+              options: faceOptions,
+              callback: (selected) {
+                setState(() {
+                  Provider.of<UserService>(context).avatar.face = selected;
+                });
+              },
+            ),
+            PropertyCarousel(
+              caption: 'Hair Styles',
+              current: hairOptions[0],
+              options: hairOptions,
+              callback: (selected) {
+                setState(() {
+                  Provider.of<UserService>(context).avatar.hair = selected;
+                });
+              },
+            ),
+            PropertyCarousel(
+              caption: 'Clothing',
+              current: bodyOptions[0],
+              options: bodyOptions,
+              callback: (selected) {
+                setState(() {
+                  Provider.of<UserService>(context).avatar.body = selected;
+                });
+              },
+            )
+          ],
+        ))
+      ]),
     );
   }
 }
