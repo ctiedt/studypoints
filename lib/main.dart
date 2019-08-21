@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:studypoints/avatar/data/repository.dart';
 import 'package:studypoints/avatar/widgets/avatar_screen.dart';
 import 'package:studypoints/avatar/widgets/avatar_view.dart';
 import 'package:studypoints/services/user.dart';
@@ -25,6 +26,15 @@ class StudyPointsApp extends StatelessWidget {
       providers: [
         Provider<UserService>(
           builder: (_) => UserService(),
+        ),
+        Provider<HairRepository>(
+          builder: (_) => HairRepository(),
+        ),
+        Provider<FaceRepository>(
+          builder: (_) => FaceRepository(),
+        ),
+        Provider<BodyRepository>(
+          builder: (_) => BodyRepository(),
         ),
       ],
       child: MaterialApp(

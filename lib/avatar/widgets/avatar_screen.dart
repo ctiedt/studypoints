@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:studypoints/avatar/data/repository.dart';
+import 'package:studypoints/avatar/data/shop_item.dart';
 import 'package:studypoints/avatar/widgets/avatar_view.dart';
 import 'package:studypoints/services/user.dart';
+
+import 'property_carousel.dart';
 
 class AvatarScreen extends StatefulWidget {
   final State parent;
@@ -21,14 +25,6 @@ class _AvatarScreenState extends State<AvatarScreen> {
     'assets/face5.png',
     'assets/face6.png',
   ];
-  final List<String> hairOptions = [
-    'assets/hair.png',
-    'assets/hair1.png',
-    'assets/hair2.png',
-    'assets/hair3.png',
-    'assets/hair4.png',
-    'assets/hairX.png',
-  ];
   final List<String> bodyOptions = [
     'assets/body1.png',
     'assets/body2.png',
@@ -37,105 +33,146 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(children: <Widget>[
+    return ListView(
+      children: <Widget>[
         Center(
             child: AvatarView(
           avatar: Provider.of<UserService>(context).avatar,
           height: 300,
         )),
-        Expanded(
-            child: ListView(
-          children: <Widget>[
-            PropertyCarousel(
-              caption: 'Faces',
-              current: faceOptions[0],
-              options: faceOptions,
-              callback: (selected) {
-                setState(() {
-                  Provider.of<UserService>(context).avatar.face = selected;
-                });
-              },
-            ),
-            PropertyCarousel(
-              caption: 'Hair Styles',
-              current: hairOptions[0],
-              options: hairOptions,
-              callback: (selected) {
-                setState(() {
-                  Provider.of<UserService>(context).avatar.hair = selected;
-                });
-              },
-            ),
-            PropertyCarousel(
-              caption: 'Clothing',
-              current: bodyOptions[0],
-              options: bodyOptions,
-              callback: (selected) {
-                setState(() {
-                  Provider.of<UserService>(context).avatar.body = selected;
-                });
-              },
-            )
-          ],
-        ))
-      ]),
+        PropertyCarousel<ShopItem>(
+          caption: 'Faces',
+          current: Provider.of<FaceRepository>(context).first,
+          options: Provider.of<FaceRepository>(context).fetchAll(),
+          builder: (face) => ShopItemView(
+            face,
+            parent: this,
+          ),
+          callback: (selected) {
+            setState(() {
+              if (Provider.of<UserService>(context).ownsItem(selected.id))
+                Provider.of<UserService>(context).avatar.face =
+                    selected.resource;
+            });
+          },
+        ),
+        PropertyCarousel<ShopItem>(
+            caption: 'Hair Styles',
+            current: Provider.of<HairRepository>(context).first,
+            options: Provider.of<HairRepository>(context).fetchAll(),
+            builder: (hair) => ShopItemView(
+                  hair,
+                  parent: this,
+                ),
+            callback: (selected) {
+              setState(() {
+                if (Provider.of<UserService>(context).ownsItem(selected.id))
+                  Provider.of<UserService>(context).avatar.hair =
+                      selected.resource;
+              });
+            }),
+        PropertyCarousel<ShopItem>(
+          caption: 'Clothing',
+          current: Provider.of<BodyRepository>(context).first,
+          options: Provider.of<BodyRepository>(context).fetchAll(),
+          builder: (body) => ShopItemView(
+            body,
+            parent: this,
+          ),
+          callback: (selected) {
+            setState(() {
+              if (Provider.of<UserService>(context).ownsItem(selected.id))
+                Provider.of<UserService>(context).avatar.body =
+                    selected.resource;
+            });
+          },
+        )
+      ],
     );
   }
 }
 
-class PropertyCarousel extends StatefulWidget {
-  final String current;
-  final List<String> options;
-  final String caption;
-  final Function(String) callback;
+class ShopItemView extends StatelessWidget {
+  final _AvatarScreenState parent;
+  final ShopItem shopItem;
 
-  const PropertyCarousel(
-      {Key key, this.current, this.options, this.caption, this.callback})
-      : super(key: key);
-
-  @override
-  _PropertyCarouselState createState() => _PropertyCarouselState();
-}
-
-class _PropertyCarouselState extends State<PropertyCarousel> {
-  String current;
-
-  @override
-  void initState() {
-    current = widget.current;
-    super.initState();
-  }
+  const ShopItemView(
+    this.shopItem, {
+    Key key,
+    this.parent,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Text(widget.caption),
-        Divider(),
-        Wrap(
-          children: widget.options
-              .map((v) => FlatButton(
-                    child: Material(
-                      elevation: current == v ? 2.0 : 0.0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0)),
-                      child: Container(
-                        height: 64,
-                        child: AspectRatio(
-                            aspectRatio: 1.0, child: Image.asset(v)),
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        current = v;
-                      });
-                      widget.callback(current);
-                    },
-                  ))
-              .toList(),
-        )
-      ],
+    return GestureDetector(
+      onLongPress: () => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(shopItem.name),
+          content: Column(
+            children: <Widget>[
+              Image.asset(shopItem.resource),
+              Text('${shopItem.cost} HC'),
+              RaisedButton(
+                child: Text(
+                    Provider.of<UserService>(context).ownsItem(shopItem.id)
+                        ? 'You own this item'
+                        : 'Buy'),
+                onPressed: (Provider.of<UserService>(context).hcCount >=
+                            shopItem.cost &&
+                        !Provider.of<UserService>(context)
+                            .ownsItem(shopItem.id))
+                    ? () {
+                        Provider.of<UserService>(context).hcCount -=
+                            shopItem.cost;
+                        Provider.of<UserService>(context)
+                            .boughtItems
+                            .add(shopItem.id);
+                        parent.setState(() {
+                          parent.widget.parent.setState(() {});
+                        });
+                      }
+                    : null,
+              )
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Dismiss'),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        ),
+      ),
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Image.asset(shopItem.thumbnail),
+          if (!Provider.of<UserService>(context).ownsItem(shopItem.id))
+            Icon(
+              Icons.lock,
+              size: 64,
+              color: Colors.black45,
+            ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  shopItem.name,
+                  style: Theme.of(context).textTheme.subhead,
+                ),
+                Text(
+                  '${shopItem.cost} HC',
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                SizedBox(height: 8)
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
