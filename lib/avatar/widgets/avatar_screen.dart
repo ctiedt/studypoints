@@ -100,6 +100,7 @@ class ShopItemView extends StatelessWidget {
                             parent.setState(() {
                               parent.widget.parent.setState(() {});
                             });
+                            Navigator.pop(context);
                           }
                         : null,
                   )
