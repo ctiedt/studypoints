@@ -6,13 +6,15 @@ import 'package:studypoints/tasks/data/task.dart';
 
 class UserService {
   int hcCount = 0;
-  Avatar avatar = Avatar();
+  Avatar avatar;
   List<Task> tasks = [];
   List<String> boughtItems = [
-    FaceRepository().first.id,
-    HairRepository().first.id,
-    BodyRepository().first.id,
+    ShopItemRepository().firstOfType('face').id,
+    ShopItemRepository().firstOfType('hair').id,
+    ShopItemRepository().firstOfType('body').id,
   ];
+
+  UserService({Avatar avatar}) : this.avatar = avatar ?? Avatar();
 
   void clearTask(Task task, BuildContext context) {
     tasks.removeWhere((t) => t.id == task.id);

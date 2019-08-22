@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:studypoints/avatar/data/repository.dart';
 import 'package:studypoints/avatar/data/shop_item.dart';
 import 'package:studypoints/avatar/widgets/avatar_view.dart';
+import 'package:studypoints/avatar/widgets/property_carousel.dart';
 import 'package:studypoints/services/user.dart';
 
 import 'property_carousel.dart';
@@ -27,51 +28,30 @@ class _AvatarScreenState extends State<AvatarScreen> {
           avatar: user.avatar,
           height: 300,
         )),
-        PropertyCarousel<ShopItem>(
-          caption: 'Faces',
-          current: Provider.of<FaceRepository>(context).first,
-          options: Provider.of<FaceRepository>(context).fetchAll(),
-          selectable: (face) => user.ownsItem(face),
-          builder: (face) => ShopItemView(
-            face,
-            parent: this,
-          ),
-          callback: (selected) {
-            setState(() {
-              if (user.ownsItem(selected)) user.avatar.face = selected.resource;
-            });
-          },
-        ),
-        PropertyCarousel<ShopItem>(
-            caption: 'Hair Styles',
-            current: Provider.of<HairRepository>(context).first,
-            options: Provider.of<HairRepository>(context).fetchAll(),
-            selectable: (hair) => user.ownsItem(hair),
-            builder: (hair) => ShopItemView(
-                  hair,
-                  parent: this,
-                ),
-            callback: (selected) {
-              setState(() {
-                if (user.ownsItem(selected))
-                  user.avatar.hair = selected.resource;
-              });
-            }),
-        PropertyCarousel<ShopItem>(
-          caption: 'Clothing',
-          current: Provider.of<BodyRepository>(context).first,
-          options: Provider.of<BodyRepository>(context).fetchAll(),
-          selectable: (body) => user.ownsItem(body),
-          builder: (body) => ShopItemView(
-            body,
-            parent: this,
-          ),
-          callback: (selected) {
-            setState(() {
-              if (user.ownsItem(selected)) user.avatar.body = selected.resource;
-            });
-          },
-        )
+        ...Provider.of<ShopItemRepository>(context)
+            .fetchAll()
+            .map((i) => i.type)
+            .toSet()
+            .map((type) => PropertyCarousel<ShopItem>(
+                  caption: type,
+                  current: Provider.of<ShopItemRepository>(context)
+                      .fetchAll()
+                      .firstWhere((i) => i.type == type),
+                  options:
+                      Provider.of<ShopItemRepository>(context).fetchType(type),
+                  selectable: (item) => user.ownsItem(item),
+                  builder: (item) => ShopItemView(
+                    item,
+                    parent: this,
+                  ),
+                  callback: (selected) {
+                    setState(() {
+                      if (user.ownsItem(selected)) {
+                        user.avatar[type] = selected.resource;
+                      }
+                    });
+                  },
+                )),
       ],
     );
   }
