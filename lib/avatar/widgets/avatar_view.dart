@@ -22,23 +22,23 @@ class AvatarViewState extends State<AvatarView> {
             child: Stack(
               alignment: AlignmentDirectional.center,
               children: <Widget>[
+                Image.asset(avatar.feet),
                 Image.asset(avatar.skin),
-                Image.asset(avatar.body),
                 Image.asset(avatar.face),
+                Image.asset("assets/head1.png"),
                 Image.asset(
                   avatar.hair,
                   color: Provider.of<UserService>(context).avatar.hairColor,
                   colorBlendMode: BlendMode.modulate,
                 ),
+                Image.asset("assets/ears1.png"),
+                Image.asset(avatar.body),
               ],
             )),
         Container(
           alignment: Alignment.topRight,
-          child: FlatButton.icon(
+          child: IconButton(
             icon: Icon(Icons.share),
-            label: Container(
-              height: 0,
-            ),
             onPressed: () {
               screenshotController
                   .capture(pixelRatio: 3)

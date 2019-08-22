@@ -21,17 +21,20 @@ class _AvatarScreenState extends State<AvatarScreen> {
     'assets/face4.png',
     'assets/face5.png',
     'assets/face6.png',
+    'assets/face7.png',
   ];
   final List<String> hairOptions = [
     'assets/hair1.png',
     'assets/hair2.png',
     'assets/hair3.png',
     'assets/hair4.png',
+    'assets/hair5.png',
   ];
   final List<String> bodyOptions = [
     'assets/body1.png',
     'assets/body2.png',
     'assets/body3.png',
+    'assets/body4.png',
   ];
   final List<String> skinOptions = [
     'assets/skin1.png',
@@ -150,7 +153,7 @@ class _PropertyCarouselState extends State<PropertyCarousel> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          child: AlertDialog(
+                          builder: (BuildContext context) => AlertDialog(
                             title: const Text('Pick a color!'),
                             content: SingleChildScrollView(
                               child: ColorPicker(

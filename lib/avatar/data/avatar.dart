@@ -6,6 +6,7 @@ class Avatar {
   String face = 'assets/face1.png';
   String hair = 'assets/hair1.png';
   String skin = 'assets/skin2.png';
+  String feet = 'assets/feet1.png';
   Color hairColor = Colors.red;
   List<String> accessoires;
 }
