@@ -28,8 +28,13 @@ class UserService {
 
   bool ownsItem(ShopItem item) => boughtItems.contains(item.id);
 
+  bool canBuy(ShopItem item) =>
+      hcCount > item.cost && !boughtItems.contains(item.id);
+
   void buy(ShopItem item) {
-    hcCount -= item.cost;
-    boughtItems.add(item.id);
+    if (canBuy(item)) {
+      hcCount -= item.cost;
+      boughtItems.add(item.id);
+    }
   }
 }

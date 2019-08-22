@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:collection/collection.dart' as collection;
 import 'package:studypoints/avatar/data/repository.dart';
 import 'package:studypoints/avatar/data/shop_item.dart';
 import 'package:studypoints/avatar/widgets/avatar_view.dart';
@@ -28,15 +29,14 @@ class _AvatarScreenState extends State<AvatarScreen> {
           avatar: user.avatar,
           height: 300,
         )),
-        ...Provider.of<ShopItemRepository>(context)
-            .fetchAll()
-            .map((i) => i.type)
-            .toSet()
+        ...collection
+            .groupBy(Provider.of<ShopItemRepository>(context).fetchAll(),
+                (v) => v.type)
+            .keys
             .map((type) => PropertyCarousel<ShopItem>(
                   caption: _typeToString(type),
                   current: Provider.of<ShopItemRepository>(context)
-                      .fetchAll()
-                      .firstWhere((i) => i.type == type),
+                      .firstOfType(type),
                   options:
                       Provider.of<ShopItemRepository>(context).fetchType(type),
                   selectable: (item) => user.ownsItem(item),
@@ -93,10 +93,8 @@ class ShopItemView extends StatelessWidget {
                   Image.asset(shopItem.resource),
                   Text('${shopItem.cost} HC'),
                   RaisedButton(
-                    child: Text(
-                        user.ownsItem(shopItem) ? 'You own this item' : 'Buy'),
-                    onPressed: (user.hcCount >= shopItem.cost &&
-                            !user.ownsItem(shopItem))
+                    child: Text('Buy'),
+                    onPressed: user.canBuy(shopItem)
                         ? () {
                             user.buy(shopItem);
                             parent.setState(() {
