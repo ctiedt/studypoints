@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:studypoints/avatar/data/avatar.dart';
+import 'package:studypoints/avatar/data/repository.dart';
 import 'package:studypoints/avatar/widgets/avatar_screen.dart';
 import 'package:studypoints/avatar/widgets/avatar_view.dart';
 import 'package:studypoints/services/user.dart';
@@ -23,8 +25,16 @@ class StudyPointsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<UserService>(
-          builder: (_) => UserService(),
+        Provider<ShopItemRepository>(
+          builder: (_) => ShopItemRepository(),
+        ),
+        ProxyProvider<ShopItemRepository, UserService>(
+          builder: (_, items, __) => UserService(
+              avatar: Avatar(
+            body: items.firstOfType('body').resource,
+            face: items.firstOfType('face').resource,
+            hair: items.firstOfType('hair').resource,
+          )),
         ),
       ],
       child: MaterialApp(
@@ -57,6 +67,9 @@ class _HomePageState extends State<HomePage> {
       ),
       AvatarScreen(
         parent: this,
+      ),
+      Center(
+        child: FlutterLogo(),
       ),
     ];
     super.initState();
