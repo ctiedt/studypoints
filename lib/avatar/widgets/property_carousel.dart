@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef Widget CarouselItemBuilder<T>(T item);
 typedef void VoidFunction<T>(T value);
+typedef bool BoolFunction<T>(T value);
 
 class PropertyCarousel<T> extends StatefulWidget {
   final T current;
@@ -9,6 +10,7 @@ class PropertyCarousel<T> extends StatefulWidget {
   final String caption;
   final VoidFunction callback;
   final CarouselItemBuilder builder;
+  final BoolFunction selectable;
 
   const PropertyCarousel(
       {Key key,
@@ -16,7 +18,8 @@ class PropertyCarousel<T> extends StatefulWidget {
       this.options,
       this.caption,
       this.callback,
-      this.builder})
+      this.builder,
+      this.selectable})
       : super(key: key);
 
   @override
@@ -55,6 +58,7 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel> {
                         ),
                       ),
                       onPressed: () {
+                        if (!widget.selectable(v)) return;
                         setState(() {
                           current = v;
                         });

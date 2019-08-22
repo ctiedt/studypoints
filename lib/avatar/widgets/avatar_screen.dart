@@ -17,42 +17,28 @@ class AvatarScreen extends StatefulWidget {
 }
 
 class _AvatarScreenState extends State<AvatarScreen> {
-  final List<String> faceOptions = [
-    'assets/face1.png',
-    'assets/face2.png',
-    'assets/face3.png',
-    'assets/face4.png',
-    'assets/face5.png',
-    'assets/face6.png',
-  ];
-  final List<String> bodyOptions = [
-    'assets/body1.png',
-    'assets/body2.png',
-    'assets/body3.png',
-  ];
-
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserService>(context);
     return ListView(
       children: <Widget>[
         Center(
             child: AvatarView(
-          avatar: Provider.of<UserService>(context).avatar,
+          avatar: user.avatar,
           height: 300,
         )),
         PropertyCarousel<ShopItem>(
           caption: 'Faces',
           current: Provider.of<FaceRepository>(context).first,
           options: Provider.of<FaceRepository>(context).fetchAll(),
+          selectable: (face) => user.ownsItem(face),
           builder: (face) => ShopItemView(
             face,
             parent: this,
           ),
           callback: (selected) {
             setState(() {
-              if (Provider.of<UserService>(context).ownsItem(selected.id))
-                Provider.of<UserService>(context).avatar.face =
-                    selected.resource;
+              if (user.ownsItem(selected)) user.avatar.face = selected.resource;
             });
           },
         ),
@@ -60,30 +46,29 @@ class _AvatarScreenState extends State<AvatarScreen> {
             caption: 'Hair Styles',
             current: Provider.of<HairRepository>(context).first,
             options: Provider.of<HairRepository>(context).fetchAll(),
+            selectable: (hair) => user.ownsItem(hair),
             builder: (hair) => ShopItemView(
                   hair,
                   parent: this,
                 ),
             callback: (selected) {
               setState(() {
-                if (Provider.of<UserService>(context).ownsItem(selected.id))
-                  Provider.of<UserService>(context).avatar.hair =
-                      selected.resource;
+                if (user.ownsItem(selected))
+                  user.avatar.hair = selected.resource;
               });
             }),
         PropertyCarousel<ShopItem>(
           caption: 'Clothing',
           current: Provider.of<BodyRepository>(context).first,
           options: Provider.of<BodyRepository>(context).fetchAll(),
+          selectable: (body) => user.ownsItem(body),
           builder: (body) => ShopItemView(
             body,
             parent: this,
           ),
           callback: (selected) {
             setState(() {
-              if (Provider.of<UserService>(context).ownsItem(selected.id))
-                Provider.of<UserService>(context).avatar.body =
-                    selected.resource;
+              if (user.ownsItem(selected)) user.avatar.body = selected.resource;
             });
           },
         )
@@ -104,71 +89,77 @@ class ShopItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserService>(context);
     return GestureDetector(
-      onLongPress: () => showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(shopItem.name),
-          content: Column(
-            children: <Widget>[
-              Image.asset(shopItem.resource),
-              Text('${shopItem.cost} HC'),
-              RaisedButton(
-                child: Text(
-                    Provider.of<UserService>(context).ownsItem(shopItem.id)
-                        ? 'You own this item'
-                        : 'Buy'),
-                onPressed: (Provider.of<UserService>(context).hcCount >=
-                            shopItem.cost &&
-                        !Provider.of<UserService>(context)
-                            .ownsItem(shopItem.id))
-                    ? () {
-                        Provider.of<UserService>(context).hcCount -=
-                            shopItem.cost;
-                        Provider.of<UserService>(context)
-                            .boughtItems
-                            .add(shopItem.id);
-                        parent.setState(() {
-                          parent.widget.parent.setState(() {});
-                        });
-                      }
-                    : null,
-              )
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Dismiss'),
-              onPressed: () => Navigator.pop(context),
-            )
-          ],
-        ),
-      ),
+      onLongPress: () {
+        if (!user.ownsItem(shopItem)) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(shopItem.name),
+              content: Column(
+                children: <Widget>[
+                  Image.asset(shopItem.resource),
+                  Text('${shopItem.cost} HC'),
+                  RaisedButton(
+                    child: Text(
+                        user.ownsItem(shopItem) ? 'You own this item' : 'Buy'),
+                    onPressed: (user.hcCount >= shopItem.cost &&
+                            !user.ownsItem(shopItem))
+                        ? () {
+                            user.buy(shopItem);
+                            parent.setState(() {
+                              parent.widget.parent.setState(() {});
+                            });
+                          }
+                        : null,
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Dismiss'),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            ),
+          );
+        }
+      },
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Image.asset(shopItem.thumbnail),
-          if (!Provider.of<UserService>(context).ownsItem(shopItem.id))
-            Icon(
-              Icons.lock,
-              size: 64,
-              color: Colors.black45,
-            ),
+          Image.asset(
+            shopItem.thumbnail,
+            color: (!user.ownsItem(shopItem)) ? Colors.grey : null,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  shopItem.name,
-                  style: Theme.of(context).textTheme.subhead,
-                ),
-                Text(
-                  '${shopItem.cost} HC',
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                SizedBox(height: 8)
-              ],
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: (user.ownsItem(shopItem))
+                      ? Theme.of(context).backgroundColor
+                      : Color(0xffe0e0e0),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(4),
+                    bottomRight: Radius.circular(4),
+                  )),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    shopItem.name,
+                    style: Theme.of(context).textTheme.subhead,
+                  ),
+                  Text(
+                    '${shopItem.cost} HC',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  SizedBox(height: 8)
+                ],
+              ),
             ),
           )
         ],

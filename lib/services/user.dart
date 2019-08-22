@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studypoints/avatar/data/avatar.dart';
 import 'package:studypoints/avatar/data/repository.dart';
+import 'package:studypoints/avatar/data/shop_item.dart';
 import 'package:studypoints/tasks/data/task.dart';
 
 class UserService {
@@ -23,5 +24,10 @@ class UserService {
     ));
   }
 
-  bool ownsItem(String id) => boughtItems.contains(id);
+  bool ownsItem(ShopItem item) => boughtItems.contains(item.id);
+
+  void buy(ShopItem item) {
+    hcCount -= item.cost;
+    boughtItems.add(item.id);
+  }
 }
