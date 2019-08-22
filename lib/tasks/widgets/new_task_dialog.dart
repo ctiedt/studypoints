@@ -13,7 +13,7 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
   int priority;
   DateTime dueDate;
   TextEditingController titleController;
-  List<TextEditingController> subtaskControllers = [];
+  Map<TextEditingController, bool> subtaskControllers;
   List<Widget> subtaskInputs = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -23,6 +23,32 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
     priority ??= widget.task?.priority ?? 0;
     dueDate ??= widget.task?.dueDate;
 
+    if (subtaskControllers == null) {
+      subtaskControllers = Map();
+      widget.task?.subtasks?.forEach((String s, bool b) {
+        var controller = TextEditingController(text: s);
+        var subtaskKey = UniqueKey();
+        subtaskInputs.add(Column(key: subtaskKey, children: [
+          TextFormField(
+            decoration: InputDecoration(hintText: '...'),
+            controller: controller,
+            validator: (subtask) =>
+                subtask.isEmpty ? 'Subtasks need to have a description' : null,
+          ),
+          FlatButton.icon(
+            icon: Icon(Icons.cancel),
+            label: Text('Remove subtask'),
+            onPressed: () {
+              setState(() {
+                subtaskInputs.removeWhere((i) => i.key == subtaskKey);
+                subtaskControllers.removeWhere((c, b) => c == controller);
+              });
+            },
+          )
+        ]));
+        subtaskControllers[controller] = b;
+      });
+    }
     return Form(
       key: _formKey,
       autovalidate: true,
@@ -43,12 +69,13 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.check),
           onPressed: () {
+            Map<String, bool> subtasks = Map();
+            subtaskControllers.forEach((c, b) {
+              subtasks[c.value.text] = b;
+            });
             Task task = Task(
               title: titleController.value.text,
-              subtasks: {
-                for (var controller in subtaskControllers)
-                  controller.value.text: false
-              },
+              subtasks: subtasks,
               dueDate: dueDate,
               priority: priority,
             );
@@ -57,7 +84,7 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
+          child: ListView(
             children: <Widget>[
               TextFormField(
                 controller: titleController,
@@ -92,12 +119,12 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
                             subtaskInputs
                                 .removeWhere((i) => i.key == subtaskKey);
                             subtaskControllers
-                                .removeWhere((c) => c == controller);
+                                .removeWhere((c, b) => c == controller);
                           });
                         },
                       )
                     ]));
-                    subtaskControllers.add(controller);
+                    subtaskControllers[controller] = false;
                   });
                 },
               ),
