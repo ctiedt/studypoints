@@ -33,7 +33,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
             .map((i) => i.type)
             .toSet()
             .map((type) => PropertyCarousel<ShopItem>(
-                  caption: type,
+                  caption: _typeToString(type),
                   current: Provider.of<ShopItemRepository>(context)
                       .fetchAll()
                       .firstWhere((i) => i.type == type),
@@ -54,6 +54,17 @@ class _AvatarScreenState extends State<AvatarScreen> {
                 )),
       ],
     );
+  }
+
+  String _typeToString(String type) {
+    switch (type) {
+      case 'body':
+        return 'Clothing';
+      case 'face':
+        return 'Faces';
+      case 'hair':
+        return 'Hair Styles';
+    }
   }
 }
 
@@ -134,7 +145,7 @@ class ShopItemView extends StatelessWidget {
                     style: Theme.of(context).textTheme.subhead,
                   ),
                   Text(
-                    '${shopItem.cost} HC',
+                    !user.ownsItem(shopItem) ? '${shopItem.cost} HC' : '',
                     style: Theme.of(context).textTheme.caption,
                   ),
                   SizedBox(height: 8)
