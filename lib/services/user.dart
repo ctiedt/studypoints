@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:studypoints/avatar/data/avatar.dart';
+import 'package:studypoints/avatar/data/repository.dart';
+import 'package:studypoints/avatar/data/shop_item.dart';
 import 'package:studypoints/tasks/data/task.dart';
 
 class UserService {
   int hcCount = 0;
-  Avatar avatar = Avatar();
+  Avatar avatar;
   List<Task> tasks = [];
+  List<String> boughtItems = [
+    ShopItemRepository().firstOfType('face').id,
+    ShopItemRepository().firstOfType('hair').id,
+    ShopItemRepository().firstOfType('body').id,
+  ];
+
+  UserService({Avatar avatar}) : this.avatar = avatar ?? Avatar();
 
   void clearTask(Task task, BuildContext context) {
     tasks.removeWhere((t) => t.id == task.id);
@@ -15,5 +24,17 @@ class UserService {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text('You earned $reward HC for completing a task!'),
     ));
+  }
+
+  bool ownsItem(ShopItem item) => boughtItems.contains(item.id);
+
+  bool canBuy(ShopItem item) =>
+      hcCount > item.cost && !boughtItems.contains(item.id);
+
+  void buy(ShopItem item) {
+    if (canBuy(item)) {
+      hcCount -= item.cost;
+      boughtItems.add(item.id);
+    }
   }
 }
