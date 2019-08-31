@@ -82,40 +82,44 @@ class ShopItemView extends StatelessWidget {
   Widget build(BuildContext context) {
     var user = Provider.of<UserService>(context);
     return GestureDetector(
-      onLongPress: () {
-        if (!user.ownsItem(shopItem)) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(shopItem.name),
-              content: Column(
-                children: <Widget>[
-                  Image.asset(shopItem.resource),
-                  Text('${shopItem.cost} HC'),
-                  RaisedButton(
-                    child: Text('Buy'),
-                    onPressed: user.canBuy(shopItem)
-                        ? () {
-                            user.buy(shopItem);
-                            parent.setState(() {
-                              parent.widget.parent.setState(() {});
-                            });
-                            Navigator.pop(context);
-                          }
-                        : null,
-                  )
-                ],
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Dismiss'),
-                  onPressed: () => Navigator.pop(context),
-                )
-              ],
-            ),
-          );
-        }
-      },
+      onTap: user.ownsItem(shopItem)
+          ? null
+          : () {
+              if (!user.ownsItem(shopItem)) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(shopItem.name),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          Image.asset(shopItem.resource),
+                          Text('${shopItem.cost} HC'),
+                          RaisedButton(
+                            child: Text('Buy'),
+                            onPressed: user.canBuy(shopItem)
+                                ? () {
+                                    user.buy(shopItem);
+                                    parent.setState(() {
+                                      parent.widget.parent.setState(() {});
+                                    });
+                                    Navigator.pop(context);
+                                  }
+                                : null,
+                          )
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('Dismiss'),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    ],
+                  ),
+                );
+              }
+            },
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
