@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 
 class Avatar {
   String name = 'Nina';
-  String body = 'assets/body1.png';
-  String face = 'assets/face1.png';
-  String hair = 'assets/hair1.png';
-  String skin = 'assets/skin2.png';
+  String body;
+  String face;
+  String hair;
+  String skin;
   String feet = 'assets/feet1.png';
   Color hairColor = Colors.red;
-  List<String> accessoires;
+  List<String> accessoires = [];
 
-  Avatar({
-    this.name,
-    this.body,
-    this.face,
-    this.hair,
-  });
+  Avatar({this.name, this.body, this.face, this.hair, this.skin});
 
   operator [](String type) {
     switch (type) {
@@ -27,6 +22,10 @@ class Avatar {
         return face;
       case 'hair':
         return hair;
+      case 'skin':
+        return skin;
+      case 'extra':
+        return accessoires;
     }
   }
 
@@ -43,6 +42,9 @@ class Avatar {
         break;
       case 'hair':
         hair = value;
+        break;
+      case 'skin':
+        skin = value;
         break;
     }
   }
