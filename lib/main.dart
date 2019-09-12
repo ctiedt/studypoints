@@ -31,6 +31,7 @@ class StudyPointsApp extends StatelessWidget {
         ProxyProvider<ShopItemRepository, UserService>(
           builder: (_, items, __) => UserService(
               avatar: Avatar(
+            name: 'Nina',
             body: items.firstOfType('body').id,
             face: items.firstOfType('face').id,
             hair: items.firstOfType('hair').id,

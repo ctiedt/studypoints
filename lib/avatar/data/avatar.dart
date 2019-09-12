@@ -10,7 +10,13 @@ class Avatar {
   Color hairColor = Colors.red;
   List<String> accessoires = [];
 
-  Avatar({this.name, this.body, this.face, this.hair, this.skin});
+  Avatar({
+    this.name,
+    this.body,
+    this.face,
+    this.hair,
+    this.skin,
+  });
 
   operator [](String type) {
     switch (type) {

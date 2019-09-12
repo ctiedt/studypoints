@@ -69,10 +69,8 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.check),
           onPressed: () {
-            Map<String, bool> subtasks = Map();
-            subtaskControllers.forEach((c, b) {
-              subtasks[c.value.text] = b;
-            });
+            Map<String, bool> subtasks =
+                subtaskControllers.map((c, b) => MapEntry(c.value.text, b));
             Task task = Task(
               title: titleController.value.text,
               subtasks: subtasks,

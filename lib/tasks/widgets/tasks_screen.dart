@@ -41,6 +41,23 @@ class _TasksScreenState extends State<TasksScreen> {
     return result == 0 ? sortByDate(t1, t2) : result;
   }
 
+  _editTask(Task t) {
+    Navigator.of(context)
+        .push(MaterialPageRoute<Task>(
+      builder: (context) => NewTaskDialog(task: t),
+    ))
+        .then((val) {
+      if (val == null) return;
+      Provider.of<UserService>(context)
+          .tasks
+          .singleWhere((task) => task.id == t.id)
+            ..title = val.title
+            ..priority = val.priority
+            ..subtasks = val.subtasks
+            ..dueDate = val.dueDate;
+    });
+  }
+
   @override
   void initState() {
     taskSorter = sortByDate;
@@ -120,20 +137,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           )
                         ],
                       ),
-                      onLongPress: () => Navigator.of(context)
-                          .push(MaterialPageRoute<Task>(
-                        builder: (context) => NewTaskDialog(task: t),
-                      ))
-                          .then((val) {
-                        if (val == null) return;
-                        Provider.of<UserService>(context)
-                            .tasks
-                            .singleWhere((task) => task.id == t.id)
-                              ..title = val.title
-                              ..priority = val.priority
-                              ..subtasks = val.subtasks
-                              ..dueDate = val.dueDate;
-                      }),
+                      onLongPress: () => _editTask(t),
                       trailing: Icon(
                         Icons.bookmark,
                         color: t.color,
@@ -142,20 +146,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
                   ///Task with subtasks
                   : GestureDetector(
-                      onLongPress: () => Navigator.of(context)
-                              .push(MaterialPageRoute<Task>(
-                            builder: (context) => NewTaskDialog(task: t),
-                          ))
-                              .then((val) {
-                            if (val == null) return;
-                            Provider.of<UserService>(context)
-                                .tasks
-                                .singleWhere((task) => task.id == t.id)
-                                  ..title = val.title
-                                  ..priority = val.priority
-                                  ..subtasks = val.subtasks
-                                  ..dueDate = val.dueDate;
-                          }),
+                      onLongPress: () => _editTask(t),
                       child: ExpansionTile(
                         title: Row(children: [
                           Text(
