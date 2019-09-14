@@ -34,13 +34,6 @@ class PropertyCarousel<T> extends StatefulWidget {
 }
 
 class _PropertyCarouselState<T> extends State<PropertyCarousel<T>> {
-  List<T> currentList = [];
-
-  void initState() {
-    currentList.addAll(widget.currentList);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -54,7 +47,7 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel<T>> {
                 .map((v) => FlatButton(
                       padding: EdgeInsets.all(8),
                       child: Material(
-                        elevation: currentList.contains(v) ? 2.0 : 0.0,
+                        elevation: widget.currentList.contains(v) ? 2.0 : 0.0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4.0)),
                         child: Container(
@@ -67,25 +60,26 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel<T>> {
                         if (!widget.selectable(v)) {
                           widget.disabledCallback(v, () {
                             setState(() {
-                              if (!widget.isMultiSelect) currentList.clear();
-                              currentList.add(v);
+                              if (!widget.isMultiSelect)
+                                widget.currentList.clear();
+                              widget.currentList.add(v);
                             });
                           });
                           return;
                         }
-                        if (!currentList.contains(v)) {
+                        if (!widget.currentList.contains(v)) {
                           setState(() {
-                            if (!widget.isMultiSelect) currentList.clear();
-                            currentList.add(v);
+                            if (!widget.isMultiSelect)
+                              widget.currentList.clear();
+                            widget.currentList.add(v);
                           });
                           widget.callbackSelected(v);
                         } else if (widget.isMultiSelect) {
                           setState(() {
-                            currentList.remove(v);
+                            widget.currentList.remove(v);
                           });
                           widget.callbackUnselected(v);
                         }
-                        print(currentList);
                       },
                     ))
                 .toList(),

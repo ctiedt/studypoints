@@ -75,9 +75,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
           child: IconButton(
             icon: Icon(Icons.color_lens),
             onPressed: () {
-              setState(() {
-                _showColorDialog(context);
-              });
+              _showColorDialog(context);
             },
           ),
         )
