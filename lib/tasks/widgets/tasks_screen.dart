@@ -41,6 +41,23 @@ class _TasksScreenState extends State<TasksScreen> {
     return result == 0 ? sortByDate(t1, t2) : result;
   }
 
+  _editTask(Task t) {
+    Navigator.of(context)
+        .push(MaterialPageRoute<Task>(
+      builder: (context) => NewTaskDialog(task: t),
+    ))
+        .then((val) {
+      if (val == null) return;
+      Provider.of<UserService>(context)
+          .tasks
+          .singleWhere((task) => task.id == t.id)
+            ..title = val.title
+            ..priority = val.priority
+            ..subtasks = val.subtasks
+            ..dueDate = val.dueDate;
+    });
+  }
+
   @override
   void initState() {
     taskSorter = sortByDate;
@@ -120,20 +137,7 @@ class _TasksScreenState extends State<TasksScreen> {
                           )
                         ],
                       ),
-                      onLongPress: () => Navigator.of(context)
-                          .push(MaterialPageRoute<Task>(
-                        builder: (context) => NewTaskDialog(task: t),
-                      ))
-                          .then((val) {
-                        if (val == null) return;
-                        Provider.of<UserService>(context)
-                            .tasks
-                            .singleWhere((task) => task.id == t.id)
-                              ..title = val.title
-                              ..priority = val.priority
-                              ..subtasks = val.subtasks
-                              ..dueDate = val.dueDate;
-                      }),
+                      onLongPress: () => _editTask(t),
                       trailing: Icon(
                         Icons.bookmark,
                         color: t.color,
@@ -141,56 +145,58 @@ class _TasksScreenState extends State<TasksScreen> {
                     )
 
                   ///Task with subtasks
-                  : ExpansionTile(
-                      title: Row(children: [
-                        Text(
-                            '${t.title} (${t.subtasks.values.where((v) => v).length}/${t.subtasks.values.length})'),
-                        Spacer(),
-                        if (t.dueDate != null)
-                          Chip(
-                              label: Text(
-                                  '${t.dueDate.year}-${t.dueDate.month}-${t.dueDate.day}')),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () async {
-                            var confirmed = await _showDeleteDialog();
-                            setState(() {
-                              if (confirmed) {
-                                Provider.of<UserService>(context)
-                                    .tasks
-                                    .removeWhere((task) => task.id == t.id);
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                  content: Text('Deleted task "${t.title}"'),
-                                ));
-                              }
-                            });
-                          },
-                        ),
-                        Icon(
-                          Icons.bookmark,
-                          color: t.color,
-                        )
-                      ]),
-                      initiallyExpanded: opened[t.id] ?? false,
-                      onExpansionChanged: (open) {
-                        setState(() {
-                          opened[t.id] = open;
-                        });
-                      },
-                      children: t.subtasks.keys
-                          .map((s) => CheckboxListTile(
-                                title: Text(s),
-                                value: t.subtasks[s],
-                                onChanged: (checked) {
+                  : GestureDetector(
+                      onLongPress: () => _editTask(t),
+                      child: ExpansionTile(
+                        title: Row(children: [
+                          Text(
+                              '${t.title} (${t.subtasks.values.where((v) => v).length}/${t.subtasks.values.length})'),
+                          Spacer(),
+                          if (t.dueDate != null)
+                            Chip(
+                                label: Text(
+                                    '${t.dueDate.year}-${t.dueDate.month}-${t.dueDate.day}')),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () async {
+                              var confirmed = await _showDeleteDialog();
+                              setState(() {
+                                if (confirmed) {
                                   Provider.of<UserService>(context)
                                       .tasks
-                                      .firstWhere((task) => t.id == task.id)
-                                      .subtasks[s] = checked;
-                                  setState(() {});
-                                },
-                              ))
-                          .toList(),
-                    ),
+                                      .removeWhere((task) => task.id == t.id);
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text('Deleted task "${t.title}"'),
+                                  ));
+                                }
+                              });
+                            },
+                          ),
+                          Icon(
+                            Icons.bookmark,
+                            color: t.color,
+                          )
+                        ]),
+                        initiallyExpanded: opened[t.id] ?? false,
+                        onExpansionChanged: (open) {
+                          setState(() {
+                            opened[t.id] = open;
+                          });
+                        },
+                        children: t.subtasks.keys
+                            .map((s) => CheckboxListTile(
+                                  title: Text(s),
+                                  value: t.subtasks[s],
+                                  onChanged: (checked) {
+                                    Provider.of<UserService>(context)
+                                        .tasks
+                                        .firstWhere((task) => t.id == task.id)
+                                        .subtasks[s] = checked;
+                                    setState(() {});
+                                  },
+                                ))
+                            .toList(),
+                      )),
             ),
           ))
     ]);

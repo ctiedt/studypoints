@@ -3,38 +3,37 @@ import 'package:flutter/material.dart';
 typedef Widget CarouselItemBuilder<T>(T item);
 typedef void VoidFunction<T>(T value);
 typedef bool BoolFunction<T>(T value);
+typedef void VoidCallbackFunction<T>(T value, Function callback);
 
 class PropertyCarousel<T> extends StatefulWidget {
-  final T current;
+  final List<T> currentList;
   final List<T> options;
   final String caption;
-  final VoidFunction callback;
+  final VoidFunction callbackSelected;
+  final VoidFunction callbackDeselected;
   final CarouselItemBuilder builder;
   final BoolFunction selectable;
+  final VoidCallbackFunction disabledCallback;
+  final bool isMultiSelect;
 
   const PropertyCarousel(
       {Key key,
-      this.current,
+      this.currentList,
       this.options,
       this.caption,
-      this.callback,
+      this.callbackSelected,
+      this.callbackDeselected,
       this.builder,
-      this.selectable})
+      this.selectable,
+      this.disabledCallback,
+      this.isMultiSelect = false})
       : super(key: key);
 
   @override
   _PropertyCarouselState createState() => _PropertyCarouselState<T>();
 }
 
-class _PropertyCarouselState<T> extends State<PropertyCarousel> {
-  T current;
-
-  @override
-  void initState() {
-    current = widget.current;
-    super.initState();
-  }
-
+class _PropertyCarouselState<T> extends State<PropertyCarousel<T>> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,7 +47,7 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel> {
                 .map((v) => FlatButton(
                       padding: EdgeInsets.all(8),
                       child: Material(
-                        elevation: current == v ? 2.0 : 0.0,
+                        elevation: widget.currentList.contains(v) ? 2.0 : 0.0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4.0)),
                         child: Container(
@@ -58,11 +57,29 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel> {
                         ),
                       ),
                       onPressed: () {
-                        if (!widget.selectable(v)) return;
-                        setState(() {
-                          current = v;
-                        });
-                        widget.callback(current);
+                        if (!widget.selectable(v)) {
+                          widget.disabledCallback(v, () {
+                            setState(() {
+                              if (!widget.isMultiSelect)
+                                widget.currentList.clear();
+                              widget.currentList.add(v);
+                            });
+                          });
+                          return;
+                        }
+                        if (!widget.currentList.contains(v)) {
+                          setState(() {
+                            if (!widget.isMultiSelect)
+                              widget.currentList.clear();
+                            widget.currentList.add(v);
+                          });
+                          widget.callbackSelected(v);
+                        } else if (widget.isMultiSelect) {
+                          setState(() {
+                            widget.currentList.remove(v);
+                          });
+                          widget.callbackDeselected(v);
+                        }
                       },
                     ))
                 .toList(),

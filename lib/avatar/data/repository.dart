@@ -12,8 +12,8 @@ class ShopItemRepository extends Repository<ShopItem> {
       id: 'face1',
       type: 'face',
       name: 'Face 1',
-      resource: 'assets/face.png',
-      thumbnail: 'assets/face.png',
+      resource: 'assets/face1.png',
+      thumbnail: 'assets/face1.png',
       cost: 100,
     ),
     ShopItem(
@@ -57,6 +57,14 @@ class ShopItemRepository extends Repository<ShopItem> {
       cost: 100,
     ),
     ShopItem(
+      id: 'face7',
+      type: 'face',
+      name: 'Face 7',
+      resource: 'assets/face7.png',
+      thumbnail: 'assets/face7.png',
+      cost: 100,
+    ),
+    ShopItem(
       id: 'hair1',
       type: 'hair',
       name: 'Hair 1',
@@ -89,11 +97,11 @@ class ShopItemRepository extends Repository<ShopItem> {
       cost: 100,
     ),
     ShopItem(
-      id: 'hairX',
+      id: 'hair5',
       type: 'hair',
-      name: 'Hair X',
-      resource: 'assets/hairX.png',
-      thumbnail: 'assets/hairX.png',
+      name: 'Hair 5',
+      resource: 'assets/hair5.png',
+      thumbnail: 'assets/hair5.png',
       cost: 100,
     ),
     ShopItem(
@@ -120,9 +128,58 @@ class ShopItemRepository extends Repository<ShopItem> {
       thumbnail: 'assets/body3.png',
       cost: 100,
     ),
+    ShopItem(
+      id: 'body4',
+      type: 'body',
+      name: 'Outfit 4',
+      resource: 'assets/body4.png',
+      thumbnail: 'assets/body4.png',
+      cost: 100,
+    ),
+    ShopItem(
+      id: 'skin1',
+      type: 'skin',
+      name: 'Skin 1',
+      resource: 'assets/skin1.png',
+      thumbnail: 'assets/skin1.png',
+      cost: 100,
+    ),
+    ShopItem(
+      id: 'skin2',
+      type: 'skin',
+      name: 'Skin 2',
+      resource: 'assets/skin2.png',
+      thumbnail: 'assets/skin2.png',
+      cost: 100,
+    ),
+    ShopItem(
+      id: 'skin3',
+      type: 'skin',
+      name: 'Skin 3',
+      resource: 'assets/skin3.png',
+      thumbnail: 'assets/skin3.png',
+      cost: 100,
+    ),
+    ShopItem(
+      id: 'extra1',
+      type: 'extra',
+      name: 'Accessoir 1',
+      resource: 'assets/extra1.png',
+      thumbnail: 'assets/extra1.png',
+      cost: 100,
+    ),
+    ShopItem(
+      id: 'extra2',
+      type: 'extra',
+      name: 'Accessoir 2',
+      resource: 'assets/extra2.png',
+      thumbnail: 'assets/extra2.png',
+      cost: 100,
+    ),
   ];
 
-  ShopItem fetch(String id) => _items.firstWhere((h) => h.id == id);
+  ShopItem fetch(String id) =>
+      _items.firstWhere((h) => h.id == id, orElse: () => null);
 
   List<ShopItem> fetchAll() => _items;
 

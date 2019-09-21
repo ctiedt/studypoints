@@ -12,6 +12,7 @@ class UserService {
     ShopItemRepository().firstOfType('face').id,
     ShopItemRepository().firstOfType('hair').id,
     ShopItemRepository().firstOfType('body').id,
+    ...ShopItemRepository().fetchType('skin').map((item) => item.id),
   ];
 
   UserService({Avatar avatar}) : this.avatar = avatar ?? Avatar();
@@ -29,7 +30,7 @@ class UserService {
   bool ownsItem(ShopItem item) => boughtItems.contains(item.id);
 
   bool canBuy(ShopItem item) =>
-      hcCount > item.cost && !boughtItems.contains(item.id);
+      hcCount >= item.cost && !boughtItems.contains(item.id);
 
   void buy(ShopItem item) {
     if (canBuy(item)) {
