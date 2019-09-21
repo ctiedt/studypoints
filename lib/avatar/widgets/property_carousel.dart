@@ -10,7 +10,7 @@ class PropertyCarousel<T> extends StatefulWidget {
   final List<T> options;
   final String caption;
   final VoidFunction callbackSelected;
-  final VoidFunction callbackUnselected;
+  final VoidFunction callbackDeselected;
   final CarouselItemBuilder builder;
   final BoolFunction selectable;
   final VoidCallbackFunction disabledCallback;
@@ -22,7 +22,7 @@ class PropertyCarousel<T> extends StatefulWidget {
       this.options,
       this.caption,
       this.callbackSelected,
-      this.callbackUnselected,
+      this.callbackDeselected,
       this.builder,
       this.selectable,
       this.disabledCallback,
@@ -78,7 +78,7 @@ class _PropertyCarouselState<T> extends State<PropertyCarousel<T>> {
                           setState(() {
                             widget.currentList.remove(v);
                           });
-                          widget.callbackUnselected(v);
+                          widget.callbackDeselected(v);
                         }
                       },
                     ))

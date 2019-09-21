@@ -57,9 +57,12 @@ class AvatarViewState extends State<AvatarView> {
             )),
         Align(
           alignment: Alignment.topRight,
-          child: IconButton(
-            icon: Icon(Icons.share),
-            onPressed: _shareImage,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: IconButton(
+              icon: Icon(Icons.share),
+              onPressed: _shareImage,
+            ),
           ),
         )
       ]),
