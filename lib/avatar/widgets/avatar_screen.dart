@@ -25,7 +25,7 @@ class _AvatarScreenState extends State<AvatarScreen> {
     var selectedColor = user.avatar.hairColor;
     showDialog(
       context: context,
-      child: AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Pick a color!'),
         content: SingleChildScrollView(
           child: ColorPicker(
@@ -61,119 +61,131 @@ class _AvatarScreenState extends State<AvatarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserService>(context);
-    var shopItemRepository = Provider.of<ShopItemRepository>(context);
-    return Column(children: <Widget>[
-      Stack(children: <Widget>[
-        Center(
-            child: AvatarView(
-          avatar: user.avatar,
-          height: 300,
-        )),
-        Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            icon: Icon(Icons.color_lens),
-            onPressed: () {
-              _showColorDialog(context);
-            },
-          ),
-        )
-      ]),
-      Expanded(
-          child: ListView(children: <Widget>[
-        ...collection
-            .groupBy(shopItemRepository.fetchAll(), (v) => v.type)
-            .keys
-            .map((type) => PropertyCarousel<ShopItem>(
-                  isMultiSelect: type == 'extra',
-                  caption: _typeToString(type),
-                  currentList: type == 'extra'
-                      ? List<ShopItem>.from(user.avatar[type].map(
-                          (String extraId) =>
-                              shopItemRepository.fetch(extraId)))
-                      : <ShopItem>[
-                          shopItemRepository.fetch(user.avatar[type]) ??
-                              shopItemRepository.firstOfType(type)
-                        ],
-                  options: shopItemRepository.fetchType(type),
-                  selectable: (item) => user.ownsItem(item),
-                  builder: (item) => ShopItemView(
-                    item,
-                    parent: this,
-                  ),
-                  callbackSelected: (selected) {
-                    setState(() {
-                      if (user.ownsItem(selected)) {
-                        if (type == 'extra')
-                          user.avatar[type].add(selected.id);
-                        else
-                          user.avatar[type] = selected.id;
-                      }
-                    });
+    return Consumer2<UserService, ShopItemRepository>(
+      builder: (context, user, shopItemRepository, __) =>
+          Column(children: <Widget>[
+        Material(
+          elevation: 4.0,
+          child: Stack(children: <Widget>[
+            Center(
+                child: AvatarView(
+              avatar: user.avatar,
+              height: 300,
+            )),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IconButton(
+                  icon: Icon(Icons.color_lens),
+                  onPressed: () {
+                    _showColorDialog(context);
                   },
-                  callbackUnselected: type == 'extra'
-                      ? (unselected) {
+                ),
+              ),
+            )
+          ]),
+        ),
+        Expanded(
+            child: ListView(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                children: <Widget>[
+              ...collection
+                  .groupBy(shopItemRepository.fetchAll(), (v) => v.type)
+                  .keys
+                  .map((type) => PropertyCarousel<ShopItem>(
+                        isMultiSelect: type == 'extra',
+                        caption: _typeToString(type),
+                        currentList: type == 'extra'
+                            ? List<ShopItem>.from(user.avatar[type].map(
+                                (String extraId) =>
+                                    shopItemRepository.fetch(extraId)))
+                            : <ShopItem>[
+                                shopItemRepository.fetch(user.avatar[type]) ??
+                                    shopItemRepository.firstOfType(type)
+                              ],
+                        options: shopItemRepository.fetchType(type),
+                        selectable: (item) => user.ownsItem(item),
+                        builder: (item) => ShopItemView(
+                          item,
+                          parent: this,
+                        ),
+                        callbackSelected: (selected) {
                           setState(() {
-                            if (user.ownsItem(unselected)) {
-                              user.avatar[type].remove(unselected.id);
+                            if (user.ownsItem(selected)) {
+                              if (type == 'extra')
+                                user.avatar[type].add(selected.id);
+                              else
+                                user.avatar[type] = selected.id;
                             }
                           });
-                        }
-                      : null,
-                  disabledCallback: (shopItem, Function purchaseCallback) {
-                    if (!user.ownsItem(shopItem)) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(shopItem.name),
-                          content: Column(
-                            children: <Widget>[
-                              Image.asset(
-                                shopItem.resource,
-                                color: type == 'hair'
-                                    ? user.avatar.hairColor
-                                    : null,
-                                colorBlendMode:
-                                    type == 'hair' ? BlendMode.modulate : null,
+                        },
+                        callbackDeselected: type == 'extra'
+                            ? (deselected) {
+                                setState(() {
+                                  if (user.ownsItem(deselected)) {
+                                    user.avatar[type].remove(deselected.id);
+                                  }
+                                });
+                              }
+                            : null,
+                        disabledCallback:
+                            (shopItem, Function purchaseCallback) {
+                          if (!user.ownsItem(shopItem)) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(shopItem.name),
+                                content: Column(
+                                  children: <Widget>[
+                                    Image.asset(
+                                      shopItem.resource,
+                                      color: type == 'hair'
+                                          ? user.avatar.hairColor
+                                          : null,
+                                      colorBlendMode: type == 'hair'
+                                          ? BlendMode.modulate
+                                          : null,
+                                    ),
+                                    Text('${shopItem.cost} HC'),
+                                    RaisedButton(
+                                      child: Text('Buy'),
+                                      onPressed: user.canBuy(shopItem)
+                                          ? () {
+                                              user.buy(shopItem);
+                                              setState(() {
+                                                if (type == 'extra')
+                                                  widget.parent.setState(() {
+                                                    user.avatar[type]
+                                                        .add(shopItem.id);
+                                                  });
+                                                else
+                                                  widget.parent.setState(() {
+                                                    user.avatar[type] =
+                                                        shopItem.id;
+                                                  });
+                                              });
+                                              purchaseCallback();
+                                              Navigator.pop(context);
+                                            }
+                                          : null,
+                                    )
+                                  ],
+                                ),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: Text('Dismiss'),
+                                    onPressed: () => Navigator.pop(context),
+                                  )
+                                ],
                               ),
-                              Text('${shopItem.cost} HC'),
-                              RaisedButton(
-                                child: Text('Buy'),
-                                onPressed: user.canBuy(shopItem)
-                                    ? () {
-                                        user.buy(shopItem);
-                                        setState(() {
-                                          if (type == 'extra')
-                                            widget.parent.setState(() {
-                                              user.avatar[type]
-                                                  .add(shopItem.id);
-                                            });
-                                          else
-                                            widget.parent.setState(() {
-                                              user.avatar[type] = shopItem.id;
-                                            });
-                                        });
-                                        purchaseCallback();
-                                        Navigator.pop(context);
-                                      }
-                                    : null,
-                              )
-                            ],
-                          ),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text('Dismiss'),
-                              onPressed: () => Navigator.pop(context),
-                            )
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                ))
-      ]))
-    ]);
+                            );
+                          }
+                        },
+                      ))
+            ]))
+      ]),
+    );
   }
 
   String _typeToString(String type) {
@@ -210,47 +222,48 @@ class ShopItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserService>(context);
-    return Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Image.asset(
-          shopItem.thumbnail,
-          color: color,
-          colorBlendMode: user.ownsItem(shopItem) && shopItem.type == 'hair'
-              ? BlendMode.modulate
-              : null,
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: (user.ownsItem(shopItem))
-                    ? Theme.of(context).backgroundColor
-                    : Color(0xffe0e0e0),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(4),
-                  bottomRight: Radius.circular(4),
-                )),
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  shopItem.name,
-                  style: Theme.of(context).textTheme.subhead,
-                ),
-                Text(
-                  !user.ownsItem(shopItem) ? '${shopItem.cost} HC' : '',
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                SizedBox(height: 8)
-              ],
-            ),
+    return Consumer<UserService>(
+      builder: (context, user, _) => Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Image.asset(
+            shopItem.thumbnail,
+            color: color,
+            colorBlendMode: user.ownsItem(shopItem) && shopItem.type == 'hair'
+                ? BlendMode.modulate
+                : null,
           ),
-        )
-      ],
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: (user.ownsItem(shopItem))
+                      ? Theme.of(context).backgroundColor
+                      : Color(0xffe0e0e0),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(4),
+                    bottomRight: Radius.circular(4),
+                  )),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    shopItem.name,
+                    style: Theme.of(context).textTheme.subhead,
+                  ),
+                  Text(
+                    !user.ownsItem(shopItem) ? '${shopItem.cost} HC' : '',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  SizedBox(height: 8)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
