@@ -36,6 +36,7 @@ class StudyPointsApp extends StatelessWidget {
             face: items.firstOfType('face').id,
             hair: items.firstOfType('hair').id,
             skin: items.firstOfType('skin').id,
+            hairEffect: items.firstOfType('hairEffect').id,
           )),
         ),
       ],

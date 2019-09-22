@@ -176,6 +176,30 @@ class ShopItemRepository extends Repository<ShopItem> {
       thumbnail: 'assets/extra2.png',
       cost: 100,
     ),
+    ShopItem(
+      id: 'hairEffect1',
+      type: 'hairEffect',
+      name: 'Normal',
+      resource: 'assets/white.png',
+      thumbnail: 'assets/white.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'hairEffect2',
+      type: 'hairEffect',
+      name: 'Galaxy',
+      resource: 'assets/galaxy.png',
+      thumbnail: 'assets/galaxy.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'hairEffect3',
+      type: 'hairEffect',
+      name: 'Rainbow',
+      resource: 'assets/rainbow1.png',
+      thumbnail: 'assets/rainbow1.png',
+      cost: 50,
+    ),
   ];
 
   ShopItem fetch(String id) =>

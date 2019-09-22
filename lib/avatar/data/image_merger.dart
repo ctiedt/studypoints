@@ -5,11 +5,14 @@ import 'dart:async';
 
 class ImageMerger extends StatelessWidget {
   final BlendMode blendMode;
-  String image = 'assets/galaxy.png';
-  Widget blendedWidget;
+  final String image;
+  final Widget blendedWidget;
 
-  ImageMerger(
-      {this.image, this.blendedWidget, this.blendMode = BlendMode.modulate});
+  ImageMerger({
+    this.image,
+    this.blendedWidget,
+    this.blendMode = BlendMode.modulate,
+  });
 
   Future<ui.Image> _getImage() {
     Completer<ui.Image> completer = Completer<ui.Image>();
@@ -34,7 +37,7 @@ class ImageMerger extends StatelessWidget {
             },
           );
         } else {
-          return new Text('Loading...');
+          return blendedWidget;
         }
       },
     );

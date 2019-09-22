@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:studypoints/avatar/data/image_merger.dart';
 import 'package:studypoints/services/user.dart';
 import 'package:studypoints/avatar/data/avatar.dart';
 import 'package:flutter/painting.dart';
@@ -42,10 +43,19 @@ class AvatarViewState extends State<AvatarView> {
                 Image.asset(getRessource(avatar.skin)),
                 Image.asset(getRessource(avatar.face)),
                 Image.asset("assets/head1.png"),
-                Image.asset(
-                  getRessource(avatar.hair),
-                  color: Provider.of<UserService>(context).avatar.hairColor,
-                  colorBlendMode: BlendMode.modulate,
+                ImageMerger(
+                  image: getRessource(avatar.hairEffect),
+                  blendMode: BlendMode.modulate,
+                  blendedWidget: Container(
+                      width: widget.width,
+                      height: widget.height,
+                      child: Image.asset(
+                        getRessource(avatar.hair),
+                        color: avatar.hairEffect != 'hairEffect3'
+                            ? Provider.of<UserService>(context).avatar.hairColor
+                            : Colors.white,
+                        colorBlendMode: BlendMode.modulate,
+                      )),
                 ),
                 Image.asset("assets/ears1.png"),
                 Image.asset(getRessource(avatar.body)),
