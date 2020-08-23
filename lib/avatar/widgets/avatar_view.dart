@@ -59,6 +59,7 @@ class AvatarViewState extends State<AvatarView> {
                 ),
                 Image.asset("assets/ears1.png"),
                 Image.asset(getRessource(avatar.body)),
+                Image.asset(getRessource(avatar.print)),
                 ...Provider.of<UserService>(context)
                     .avatar
                     .accessoires

@@ -5,6 +5,7 @@ class Avatar {
   String body;
   String face;
   String hair;
+  String print;
   String skin;
   String feet = 'assets/feet1.png';
   String hairEffect;
@@ -17,6 +18,7 @@ class Avatar {
     this.face,
     this.hair,
     this.skin,
+    this.print,
     this.hairEffect,
   });
 
@@ -32,6 +34,8 @@ class Avatar {
         return hair;
       case 'skin':
         return skin;
+      case 'print':
+        return print;
       case 'extra':
         return accessoires;
       case 'hairEffect':
@@ -55,6 +59,9 @@ class Avatar {
         break;
       case 'skin':
         skin = value;
+        break;
+      case 'print':
+        print = value;
         break;
       case 'hairEffect':
         hairEffect = value;

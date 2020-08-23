@@ -13,6 +13,7 @@ class UserService {
     ShopItemRepository().firstOfType('hair').id,
     ShopItemRepository().firstOfType('body').id,
     ShopItemRepository().firstOfType('hairEffect').id,
+    ShopItemRepository().firstOfType('print').id,
     ...ShopItemRepository().fetchType('skin').map((item) => item.id),
   ];
 

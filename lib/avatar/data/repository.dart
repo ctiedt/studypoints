@@ -200,6 +200,46 @@ class ShopItemRepository extends Repository<ShopItem> {
       thumbnail: 'assets/rainbow1.png',
       cost: 50,
     ),
+    ShopItem(
+      id: 'print0',
+      type: 'print',
+      name: 'None',
+      resource: 'assets/none.png',
+      thumbnail: 'assets/none.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'print1',
+      type: 'print',
+      name: 'Print 1',
+      resource: 'assets/print1.png',
+      thumbnail: 'assets/print1.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'print2',
+      type: 'print',
+      name: 'Print 2',
+      resource: 'assets/print2.png',
+      thumbnail: 'assets/print2.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'print3',
+      type: 'print',
+      name: 'Print 3',
+      resource: 'assets/print3.png',
+      thumbnail: 'assets/print3.png',
+      cost: 50,
+    ),
+    ShopItem(
+      id: 'print4',
+      type: 'print',
+      name: 'Print 4',
+      resource: 'assets/print4.png',
+      thumbnail: 'assets/print4.png',
+      cost: 50,
+    ),
   ];
 
   ShopItem fetch(String id) =>
