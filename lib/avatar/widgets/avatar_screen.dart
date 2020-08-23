@@ -200,6 +200,10 @@ class _AvatarScreenState extends State<AvatarScreen> {
         return 'Skin';
       case 'extra':
         return 'Accessoires';
+      case 'hairEffect':
+        return 'Hair Effects';
+      default:
+        return 'Other';
     }
   }
 }

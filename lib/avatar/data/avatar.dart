@@ -7,6 +7,7 @@ class Avatar {
   String hair;
   String skin;
   String feet = 'assets/feet1.png';
+  String hairEffect;
   Color hairColor = Colors.red;
   List<String> accessoires = [];
 
@@ -16,6 +17,7 @@ class Avatar {
     this.face,
     this.hair,
     this.skin,
+    this.hairEffect,
   });
 
   operator [](String type) {
@@ -32,6 +34,8 @@ class Avatar {
         return skin;
       case 'extra':
         return accessoires;
+      case 'hairEffect':
+        return hairEffect;
     }
   }
 
@@ -51,6 +55,9 @@ class Avatar {
         break;
       case 'skin':
         skin = value;
+        break;
+      case 'hairEffect':
+        hairEffect = value;
         break;
     }
   }
