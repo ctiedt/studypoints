@@ -8,6 +8,7 @@ import 'package:studypoints/avatar/widgets/property_carousel.dart';
 import 'package:studypoints/services/user.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
+import '../data/shop_item.dart';
 import 'property_carousel.dart';
 
 class AvatarScreen extends StatefulWidget {
@@ -188,19 +189,22 @@ class _AvatarScreenState extends State<AvatarScreen> {
     );
   }
 
-  String _typeToString(String type) {
+  String _typeToString(ShopItemType type) {
     switch (type) {
-      case 'body':
+      case ShopItemType.Body:
         return 'Clothing';
-      case 'face':
+      case ShopItemType.Face:
         return 'Faces';
-      case 'hair':
+      case ShopItemType.Hair:
         return 'Hair Styles';
-      case 'skin':
+      case ShopItemType.Skin:
         return 'Skin';
-      case 'extra':
+      case ShopItemType.Extra:
         return 'Accessoires';
+      case ShopItemType.HairEffect:
+        return 'Hair Effect';
     }
+    return '';
   }
 }
 
@@ -210,7 +214,7 @@ class ShopItemView extends StatelessWidget {
   Color get color {
     var user = Provider.of<UserService>(parent.context);
     if (!user.ownsItem(shopItem)) return Colors.grey;
-    if (shopItem.type == 'hair') return user.avatar.hairColor;
+    if (shopItem.type == ShopItemType.Hair) return user.avatar.hairColor;
     return null;
   }
 
@@ -229,9 +233,10 @@ class ShopItemView extends StatelessWidget {
           Image.asset(
             shopItem.thumbnail,
             color: color,
-            colorBlendMode: user.ownsItem(shopItem) && shopItem.type == 'hair'
-                ? BlendMode.modulate
-                : null,
+            colorBlendMode:
+                user.ownsItem(shopItem) && shopItem.type == ShopItemType.Hair
+                    ? BlendMode.modulate
+                    : null,
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -251,7 +256,7 @@ class ShopItemView extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     shopItem.name,
-                    style: Theme.of(context).textTheme.subhead,
+                    style: Theme.of(context).textTheme.subtitle1,
                   ),
                   Text(
                     !user.ownsItem(shopItem) ? '${shopItem.cost} HC' : '',

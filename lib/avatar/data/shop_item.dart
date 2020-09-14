@@ -1,7 +1,9 @@
+enum ShopItemType { Face, Hair, Body, Skin, Extra, HairEffect }
+
 class ShopItem {
   final String id;
   final String name;
-  final String type;
+  final ShopItemType type;
   final String resource;
   final String thumbnail;
   final int cost;

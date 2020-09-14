@@ -87,7 +87,7 @@ class _NewTaskDialogState extends State<NewTaskDialog> {
               TextFormField(
                 controller: titleController,
                 decoration: InputDecoration(hintText: 'Task title'),
-                style: Theme.of(context).textTheme.headline,
+                style: Theme.of(context).textTheme.headline5,
                 validator: (value) =>
                     value.isEmpty ? 'Tasks need to have a title' : null,
               ),

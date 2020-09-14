@@ -9,6 +9,7 @@ import 'package:studypoints/tasks/widgets/new_task_dialog.dart';
 import 'package:studypoints/tasks/widgets/task_dashboard_view.dart';
 import 'package:studypoints/tasks/widgets/tasks_screen.dart';
 
+import 'avatar/data/shop_item.dart';
 import 'tasks/data/task.dart';
 
 /// The heart of the operation.
@@ -32,10 +33,10 @@ class StudyPointsApp extends StatelessWidget {
           builder: (_, items, __) => UserService(
               avatar: Avatar(
             name: 'Nina',
-            body: items.firstOfType('body').id,
-            face: items.firstOfType('face').id,
-            hair: items.firstOfType('hair').id,
-            skin: items.firstOfType('skin').id,
+            body: items.firstOfType(ShopItemType.Body).id,
+            face: items.firstOfType(ShopItemType.Face).id,
+            hair: items.firstOfType(ShopItemType.Hair).id,
+            skin: items.firstOfType(ShopItemType.Skin).id,
           )),
         ),
       ],

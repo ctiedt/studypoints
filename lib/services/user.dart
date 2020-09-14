@@ -9,10 +9,10 @@ class UserService {
   Avatar avatar;
   List<Task> tasks = [];
   List<String> boughtItems = [
-    ShopItemRepository().firstOfType('face').id,
-    ShopItemRepository().firstOfType('hair').id,
-    ShopItemRepository().firstOfType('body').id,
-    ...ShopItemRepository().fetchType('skin').map((item) => item.id),
+    ShopItemRepository().firstOfType(ShopItemType.Face).id,
+    ShopItemRepository().firstOfType(ShopItemType.Hair).id,
+    ShopItemRepository().firstOfType(ShopItemType.Body).id,
+    ...ShopItemRepository().fetchType(ShopItemType.Skin).map((item) => item.id),
   ];
 
   UserService({Avatar avatar}) : this.avatar = avatar ?? Avatar();
